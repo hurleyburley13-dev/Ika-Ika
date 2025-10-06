@@ -109,6 +109,7 @@ a{color:#ff6b6b; text-decoration:underline}
               <div><strong>Received</strong><div id="emailReceived">—</div></div>
               <div><strong>Level</strong><div id="emailLevel">—</div></div>
             </div>
+            <div id="emailBackground" class="explain" style="margin:12px 16px;padding:10px;border-radius:8px;background:#0b0b0b;border:1px solid var(--border);"><strong>Background</strong><div id="emailBackgroundText" style="margin-top:6px;color:#dcdcdc">—</div></div>
             <div id="emailBody" class="email-body">—</div>
 
             <div id="resultBanner" role="status"></div>
@@ -164,97 +165,103 @@ a{color:#ff6b6b; text-decoration:underline}
 /* --- dataset --- */
 const DATA = {
   Beginner:[
-    {id:'b1',level:'Beginner',from:'Dispatch <dispatch@monitoringstation.co.nz>',subject:'Test alarm: Door contact restored',received:'2025-09-18 07:14',phish:false,body:'Hi team, the rear door contact at Site 4821 restored at 07:12. No action required.<br><br>View event in portal: <a href="#" data-href="https://portal.monitoringstation.co.nz/events/4821">portal.monitoringstation.co.nz/events/4821</a>',explain:['Legitimate internal sender and domain','Event link goes to the official portal domain']},
-    {id:'b2',level:'Beginner',from:'TELCO Billing <billing@telc0.nz>',subject:'Invoice overdue - pay now',received:'2025-09-16 16:02',phish:true,body:'Your August invoice is overdue. Pay immediately: <a href="#" data-href="http://pay.telc0.nz-login.com">pay portal</a>',explain:['Lookalike domain telc0 (zero) and subdomain login-com','HTTP (not HTTPS) on the payment link']},
-    {id:'b3',level:'Beginner',from:'Rostering <shifts@monitoringstation.co.nz>',subject:'Shift swap request - Friday night',received:'2025-09-12 09:21',phish:false,body:'Can anyone cover Friday 22:00-06:00? Reply in Teams or confirm here: <a href="#" data-href="https://intranet.monitoringstation.co.nz/rostering">intranet rostering</a>',explain:['Internal rostering address','HTTPS intranet link']},
-    {id:'b4',level:'Beginner',from:'Alarm Cloud <no-reply@alarmcloud.support>',subject:'New voicemail from Downer Intercom',received:'2025-09-10 13:17',phish:true,body:'Voice message (28s). Download MP3: <a href="#" data-href="https://alarmcloud.support.voicemail.gq/file.mp3">alarmcloud voicemail</a>',explain:['Weird multi-level domain with .gq TLD often abused','Unexpected MP3 download']},
-    {id:'b5',level:'Beginner',from:'Accounts Payable <ap@monitoringstation.co.nz>',subject:'September supplier remittance',received:'2025-09-09 08:02',phish:false,body:'Attached is the September remittance. Vendor list visible at <a href="#" data-href="https://portal.monitoringstation.co.nz/vendors">vendor portal</a>.',explain:['Normal AP message content','Official portal host']},
-    {id:'b6',level:'Beginner',from:'Microsoft MFA <no-reply@m1crosoft.com>',subject:'Reset your authenticator now',received:'2025-09-07 18:45',phish:true,body:'We detected suspicious activity.NZCS Admin Grog, has requested you Re-enrol here: <a href="#" data-href="https://secure-microsoft.com.re-enrol.id/">https://secure-microsoft.com…</a>',explain:['Misspelled m1crosoft in sender','Suspicious multi-subdomain URL not owned by Microsoft']},
+    {id:'b1',level:'Beginner',from:'Dispatch <dispatch@monitoringstation.co.nz>',subject:'Test alarm: Door contact restored',received:'2025-09-18 07:14',phish:false,background: 'Known sender — you commonly receive messages like this from this address or vendor.',body:'Hi team, the rear door contact at Site 4821 restored at 07:12. No action required.<br><br>View event in portal: <a href="#" data-href="https://portal.monitoringstation.co.nz/events/4821">portal.monitoringstation.co.nz/events/4821</a>',explain:['Legitimate internal sender and domain','Event link goes to the official portal domain']},
+    {id:'b2',level:'Beginner',from:'TELCO Billing <billing@telc0.nz>',subject:'Invoice overdue - pay now',received:'2025-09-16 16:02',phish:true,background: 'You have never had correspondence with this email address; unexpected requests here are suspicious.',body:'Your August invoice is overdue. Pay immediately: <a href="#" data-href="http://pay.telc0.nz-login.com">pay portal</a>',explain:['Lookalike domain telc0 (zero) and subdomain login-com','HTTP (not HTTPS) on the payment link']},
+    {id:'DOC1',level:'Intermediate',from:'DocuSign <no-reply@docusign.com>',subject:'Document for signature: Supplier Agreement',received:'2025-10-01 09:12',phish:true,background:'Unexpected signature request — treat with caution.',body:'\n<p>Hi George,</p>\n<p>Please review and sign the attached Supplier Agreement to finalise onboarding. Click the secure link below to open the document in DocuSign and apply your signature.</p>\n<p>Review & sign: <a href="#" data-href="https://docusign.delivery-secure.com/Envelope/ABC123">Open document</a></p>\n<p>Regards,<br>DocuSign</p>\n',explain:['Looks like a DocuSign notification but the host (delivery-secure.com) is not a DocuSign-owned domain','Links to an external signing service — verify with sender or access documents via the vendor portal or known DocuSign URL'] },,
+    {id:'b4',level:'Beginner',from:'Alarm Cloud <no-reply@alarmcloud.support>',subject:'New voicemail from Downer Intercom',received:'2025-09-10 13:17',phish:true,background: 'You have never had correspondence with this email address; unexpected requests here are suspicious.',body:'Voice message (28s). Download MP3: <a href="#" data-href="https://alarmcloud.support.voicemail.gq/file.mp3">alarmcloud voicemail</a>',explain:['Weird multi-level domain with .gq TLD often abused','Unexpected MP3 download']},
+    {id:'b5',level:'Beginner',from:'Accounts Payable <ap@monitoringstation.co.nz>',subject:'September supplier remittance',received:'2025-09-09 08:02',phish:false,background: 'Known sender — you commonly receive messages like this from this address or vendor.',body:'Attached is the September remittance. Vendor list visible at <a href="#" data-href="https://portal.monitoringstation.co.nz/vendors">vendor portal</a>.',explain:['Normal AP message content','Official portal host']},
+    {id:'b6',level:'Beginner',from:'Microsoft MFA <no-reply@m1crosoft.com>',subject:'Reset your authenticator now',received:'2025-09-07 18:45',phish:true,background: 'You have never had correspondence with this email address; unexpected requests here are suspicious.',body:'We detected suspicious activity.NZCS Admin Grog, has requested you Re-enrol here: <a href="#" data-href="https://secure-microsoft.com.re-enrol.id/">https://secure-microsoft.com…</a>',explain:['Misspelled m1crosoft in sender','Suspicious multi-subdomain URL not owned by Microsoft']},
     { id:'b7', level:'Beginner',
   from:'Courier NZ <no-reply@couriers.co.nz>',
   subject:'Delivery ETA for Monitoring Station',
   received:'2025-09-04 10:01',
   phish:false,
-  body:'Delivery ETA today. Track at <a href="#" data-href="https://couriers.co.nz/track/ABC123">couriers.co.nz/track/ABC123</a>',
+  background: 'Known sender — you commonly receive messages like this from this address or vendor.',body:'Delivery ETA today. Track at <a href="#" data-href="https://couriers.co.nz/track/ABC123">couriers.co.nz/track/ABC123</a>',
   explain:[
     'Official courier domain with HTTPS tracking page',
     'The message matches a recent consignment number in our system (expected)',
     'No urgent payment or credential requests — just tracking information'
   ]
 },
-    {id:'b8',level:'Beginner',from:'IT Support <support@monitoring-station.co.nz>',subject:'Password expiry in 1 day',received:'2025-09-03 07:59',phish:true,body:'Reset here: <a href="#" data-href="http://monitoring-station.co.nz.it-service-reset.com">Password Center</a>',explain:['Hyphenated lookalike sending domain not our primary','Reset link goes to unrelated domain']},
+    {id:'b8',level:'Beginner',from:'IT Support <support@monitoring-station.co.nz>',subject:'Password expiry in 1 day',received:'2025-09-03 07:59',phish:true,background: 'You have never had correspondence with this email address; unexpected requests here are suspicious.',body:'Reset here: <a href="#" data-href="http://monitoring-station.co.nz.it-service-reset.com">Password Center</a>',explain:['Hyphenated lookalike sending domain not our primary','Reset link goes to unrelated domain']},
     { id:'b9', level:'Beginner',
   from:'Axis Communications <invoices@axis.com>',
   subject:'Invoice INV-2025-472 issued',
   received:'2025-09-02 15:31',
   phish:false,
-  body:'Invoice available in supplier portal <a href="#" data-href="https://partners.axis.com/login">partners.axis.com/login</a>',
+  background: 'Known sender — you commonly receive messages like this from this address or vendor.',body:'Invoice available in supplier portal <a href="#" data-href="https://partners.axis.com/login">partners.axis.com/login</a>',
   explain:[
     'Well-known vendor domain (axis.com) and HTTPS portal',
     'We have an existing purchase order relationship on file (expected invoice)',
     'No request for credentials in the email body — it directs to a vendor portal login only'
   ]
 },
-    {id:'b10',level:'Beginner',from:'Security Team <soc@monitoringstation.co.nz>',subject:'SEV-2 false alarm pattern addressed',received:'2025-08-29 11:12',phish:false,body:'We tuned the motion filter for two sites. Change log: <a href="#" data-href="https://intranet.monitoringstation.co.nz/changelog">intranet changelog</a>',explain:['Internal SOC sender','Intranet link over HTTPS']}
+    {id:'SOC1',level:'Intermediate',from:'Sam Reid <sam.reid@monitoringstation.co.nz>',subject:'Quick favour — urgent transfer',received:'2025-10-02 07:45',phish:true,background:'Appears to be from a colleague but the tone and urgency are unusual.',body:'\n<p>Hi - I\'m stuck remotely and need a small payment processed now for a supplier. Can you please transfer $450 to account ending 1234 and I\'ll confirm on Slack later?</p>\n<p>Payment details: <strong>Account 12-3456-7890123</strong></p>\n<p>Thanks,<br>Sam</p>\n',explain:['Impersonation of a colleague asking for urgent funds — verify via phone or Slack before acting','Requests for transfers or gift cards are high-risk social engineering tactics'] },
   ],
-  Intermediate:[
-    {id:'i1',level:'Intermediate',from:'Security Team <soc@monitoringstation.co.nz>',subject:'Unusual login to portal (info only)',received:'2025-09-20 06:31',phish:false,body:'FYI: We saw a login for your account from Hamilton at 06:28. If this was you, no action. If not you, open a ticket in <a href="#" data-href="https://intranet.monitoringstation.co.nz/it-support">IT Support</a>.',explain:['Uses our official @monitoringstation.co.nz domain','No direct “reset password now” link; directs to internal IT page']},
-    {id:'i2',level:'Intermediate',from:'Parking <parking@aucklandairport.co.nz>',subject:'Receipt: Staff parking top-up',received:'2025-09-18 09:17',phish:false,body:'Your receipt is available in your airport account: <a href="#" data-href="https://my.aucklandairport.co.nz/receipts">my.aucklandairport.co.nz/receipts</a>',explain:['Recognisable sender and domain','No request for credentials by email']},
-    {id:'i3',level:'Intermediate',from:'Microsoft 365 <no-reply@micros0ft-security.com>',subject:'NZSC has requested you Verify your account ownership',received:'2025-09-15 20:13',phish:true,body:'We need to verify your account. Continue here: <a href="#" data-href="https://protection.micros0ft-security.com/verify">verification portal</a>',explain:['micros0ft uses a zero (0) in the domain','Not an official Microsoft domain']},
-    { id:'i4', level:'Intermediate',
+  Intermediate:[{id:'DOC1',level:'Intermediate',from:'DocuSign <no-reply@docusign.com>',subject:'Document for signature: Supplier Agreement',received:'2025-10-01 09:12',phish:true,background:'Unexpected signature request — treat with caution.',body:'\n<p>Hi George,</p>\n<p>Please review and sign the attached Supplier Agreement to finalise onboarding. Click the secure link below to open the document in DocuSign and apply your signature.</p>\n<p>Review & sign: <a href="#" data-href="https://docusign.delivery-secure.com/Envelope/ABC123">Open document</a></p>\n<p>Regards,<br>DocuSign</p>\n',explain:['Looks like a DocuSign notification but the host (delivery-secure.com) is not a DocuSign-owned domain','Links to an external signing service — verify with sender or access documents via the vendor portal or known DocuSign URL'] },,
+{id:'i2',level:'Intermediate',from:'Parking <parking@aucklandairport.co.nz>',subject:'Receipt: Staff parking top-up',received:'2025-09-18 09:17',phish:false,background: 'Expected external message — this sender or service is one you have interacted with before.',body:'\n<p>Hello,</p>\n<p>Thanks for topping up the staff parking account — the payment was processed successfully and your receipt is attached to your airport account. This email confirms the $45 top-up for parking permit #425 and includes the transaction reference.</p>\n<p>If you think this transaction is incorrect, please reply to this email within 7 days so we can review the charge and reverse it where required. To view the receipt and manage your parking permits please log in to your airport account: <a href="#" data-href="https://my.aucklandairport.co.nz/receipts/REF-8421">View receipt</a>.</p>\n<p>Kind regards,<br>Parking Services – Auckland Airport</p>\n',explain:['Recognisable sender and domain','No request for credentials by email']},
+{id:'i3',level:'Intermediate',from:'Microsoft 365 <no-reply@micros0ft-security.com>',subject:'NZSC has requested you Verify your account ownership',received:'2025-09-15 20:13',phish:true,body:'\n<p>Hi team,</p>\n<p>We require a quick verification of account ownership for NZSC’s Microsoft tenant — routine security checks are being applied this week across admin accounts. Please follow the link below to confirm your details so we can complete the verification. This helps us prevent accidental lockouts during the next policy roll-out.</p>\n<p><strong>Important:</strong> this process will only take a minute and will redirect you to the verification portal to confirm your email and device enrolment: <a href="#" data-href="https://protection.micros0ft-security.com/verify">Verify account</a>.</p>\n<p>Thanks for your prompt attention,<br>IT Security (automated)</p>\n',explain:['micros0ft uses a zero (0) in the domain','Not an official Microsoft domain']},
+{ id:'i4', level:'Intermediate',
   from:'Xero Notifications <notifications@xero.com>',
   subject:'August reconciliation complete',
   received:'2025-09-14 12:03',
   phish:false,
-  body:'Reconciliation complete. View report in Xero: <a href="#" data-href="https://login.xero.com/Reports/Reconciliation/12345">login.xero.com/Reports/...</a>',
+  background: 'Known sender — you commonly receive messages like this from this address or vendor.',body:'\n<p>Hi Finance team,</p>\n<p>The August reconciliation has completed successfully for our primary account. I’ve attached the summary and flagged one supplier with a small variance for review — see line 47 in the reconciliation report for details.</p>\n<p>Please open Xero to review the full report and mark items as reviewed: <a href="#" data-href="https://login.xero.com/Reports/Reconciliation/12345">Open reconciliation</a>. If you want me to pull a filtered export for the vendor variance I can do that and add notes to the ledger.</p>\n<p>Best regards,<br>Oliver Chen<br>Accounts Payable</p>\n',
   explain:[
     'Official SaaS login domain (login.xero.com) over HTTPS',
     'Automated notification matching our finance workflow (expected monthly recon)',
     'No password request in the email — link goes to the legitimate login interface'
   ]
 },
-    {id:'i5',level:'Intermediate',from:'Courier Update <notify@nzpost.co.nz>',subject:'Re-delivery fee required',received:'2025-09-13 09:11',phish:true,body:'We missed your delivery. Pay re-delivery fee now: <a href="#" data-href="http://nzpost.co.nz.redelivery-fee.com">nzpost re-delivery</a>',explain:['Link goes to unrelated domain with nzpost inside','Uses insecure http://']},
-    {id:'i6',level:'Intermediate',from:'HR <people@monitoringstation.co.nz>',subject:'Updated leave policy',received:'2025-09-11 08:00',phish:false,body:'We updated the leave policy. Read here: <a href="#" data-href="https://intranet.monitoringstation.co.nz/policies/leave">policy page</a>',explain:['Official domain and intranet link','Normal internal comms tone']},
-    {id:'i7',level:'Intermediate',from:'IT Service Desk <support@monitoringstation.co.nz>',subject:'Device enrollment reminder',received:'2025-09-10 10:22',phish:false,body:'Please complete the device enrollment by Friday. Steps: <a href="#" data-href="https://intranet.monitoringstation.co.nz/it/enrol">intranet enrol</a>',explain:['Internal sender','No external website used']},
-    {id:'i8',level:'Intermediate',from:'Voicemail <no-reply@vmail-monstation.gq>',subject:'Voice message (47s)',received:'2025-09-09 07:45',phish:true,body:'Listen to the message: <a href="#" data-href="https://vmail-monstation.gq/file.mp3">voicemail</a>',explain:['Uncommon .gq TLD','Unexpected audio download']},
-    { id:'i9', level:'Intermediate',
+{id:'i5',level:'Intermediate',from:'Courier Update <notify@nzpost.co.nz>',subject:'Re-delivery fee required',received:'2025-09-13 09:11',phish:true,body:'\n<p>Dear recipient,</p>\n<p>We attempted delivery of a parcel addressed to the Monitoring Station this morning but there was no one to accept it. The courier has placed a temporary hold and requests payment of a small re-delivery fee to schedule a second attempt.</p>\n<p>If you are expecting a delivery, please review the re-delivery details and pay the fee to avoid return to sender: <a href="#" data-href="http://nzpost.co.nz.redelivery-fee.com/track/ABC123">Pay re-delivery fee</a>. If this delivery is unexpected, please ignore this email.</p>\n<p>Regards,<br>NZ Post – Delivery Services</p>\n',explain:['Link goes to unrelated domain with nzpost inside','Uses insecure http://']},
+{id:'SOC1',level:'Intermediate',from:'Sam Reid <sam.reid@monitoringstation.co.nz>',subject:'Quick favour — urgent transfer',received:'2025-10-02 07:45',phish:true,background:'Appears to be from a colleague but the tone and urgency are unusual.',body:'\n<p>Hi - I\'m stuck remotely and need a small payment processed now for a supplier. Can you please transfer $450 to account ending 1234 and I\'ll confirm on Slack later?</p>\n<p>Payment details: <strong>Account 12-3456-7890123</strong></p>\n<p>Thanks,<br>Sam</p>\n',explain:['Impersonation of a colleague asking for urgent funds — verify via phone or Slack before acting','Requests for transfers or gift cards are high-risk social engineering tactics'] },,
+{id:'DOC1',level:'Intermediate',from:'DocuSign <no-reply@docusign.com>',subject:'Document for signature: Supplier Agreement',received:'2025-10-01 09:12',phish:true,background:'Unexpected signature request — treat with caution.',body:'\n<p>Hi George,</p>\n<p>Please review and sign the attached Supplier Agreement to finalise onboarding. Click the secure link below to open the document in DocuSign and apply your signature.</p>\n<p>Review & sign: <a href="#" data-href="https://docusign.delivery-secure.com/Envelope/ABC123">Open document</a></p>\n<p>Regards,<br>DocuSign</p>\n',explain:['Looks like a DocuSign notification but the host (delivery-secure.com) is not a DocuSign-owned domain','Links to an external signing service — verify with sender or access documents via the vendor portal or known DocuSign URL'] },,
+{id:'i8',level:'Intermediate',from:'Voicemail <no-reply@vmail-monstation.gq>',subject:'Voice message (47s)',received:'2025-09-09 07:45',phish:true,background: 'You have never had correspondence with this email address; unexpected requests here are suspicious.',body:'\n<p>Hi,</p>\n<p>You have a new voicemail. Click the link to listen to the message — the message length is 47 seconds and it was recorded at 07:42 this morning. The voicemail reference is VM-91822.</p>\n<p>Listen online: <a href="#" data-href="https://vmail-monstation.gq/file.mp3">Listen to voicemail</a>. If you are unable to play audio in your browser, download the MP3 to a trusted device first.</p>\n<p>Regards,<br>Voicemail Service</p>\n',explain:['Uncommon .gq TLD','Unexpected audio download']},
+{ id:'i9', level:'Intermediate',
   from:'Supply Chain <orders@downer.co.nz>',
   subject:'Order shipped: Site 3012 - 4x dome cams',
   received:'2025-09-07 13:18',
-  phish:false,
-  body:'Order and tracking information: <a href="#" data-href="https://portal.downer.co.nz/suppliers/orders/3012">portal.downer.co.nz/suppliers/orders/3012</a>',
+  phish:false,body:'\n<p>Hello,</p>\n<p>Your order for four dome cameras to Site 3012 has shipped. The shipment includes the units and mounting kits; the expected delivery date is two business days from dispatch. The purchase order and tracking number are referenced below.</p>\n<p>To view the order and detailed tracking information please go to the supplier portal: <a href="#" data-href="https://portal.downer.co.nz/suppliers/orders/3012">View order 3012</a>. If anything looks incorrect, reply to this message and we’ll coordinate with dispatch.</p>\n<p>Regards,<br>Supply Chain – Downer</p>\n',
   explain:[
     'Known contractor with prior purchase history',
     'The URL host matches the contractor portal and uses HTTPS',
     'Message references a PO and shipment that matches our system (expected)'
   ]
 },
-    {id:'i10',level:'Intermediate',from:'IT Admin <it-admin@monitoring-station.co.nz>',subject:'VPN certificate expired - update now',received:'2025-09-05 19:31',phish:true,body:'Download the new cert: <a href="#" data-href="http://vpn.monitoring-station.co.nz.update-now.info/cert.crt">vpn update</a>',explain:['Hyphenated fake company domain in sender','Download link is not our domain and uses http://']}
-  ],
+{id:'i10',level:'Intermediate',from:'IT Admin <it-admin@monitoring-station.co.nz>',subject:'VPN certificate expired - update now',received:'2025-09-05 19:31',phish:true,background: 'You have never had correspondence with this email address; unexpected requests here are suspicious.',body:'\n<p>Hi George,</p>\n<p>Our monitoring VPN certificate recently expired on one of our appliances. To restore connectivity you\\\'ll need to download and install a new certificate. The certificate file is provided below and must be installed on the VPN gateway.</p>\n<p>Download certificate: <a href="#" data-href="http://vpn.monitoring-station.co.nz.update-now.info/cert.crt">Download cert</a>. If you are not the network admin, please escalate immediately to the networking team.</p>\n<p>Thanks,<br>IT Network</p>\n',explain:['Hyphenated fake company domain in sender','Download link is not our domain and uses http://']}],
   Expert:[
-    {id:'e1',level:'Expert',from:'Security Alerts <alerts@monitoringstation.co.nz>',subject:'DKIM alignment failed for external sender (report)',received:'2025-09-22 04:50',phish:false,body:'Heads-up: We rejected a batch due to failed authentication. Report is on the intranet: <a href="#" data-href="https://intranet.monitoringstation.co.nz/security/dkim">DKIM report</a>',explain:['Internal alerts address','Points to intranet report, not to an external action link']},
-    {id:'e2',level:'Expert',from:'Microsoft Teams <no-reply@microsoft.com>',subject:'You have 2 missed messages',received:'2025-09-21 21:08',phish:false,body:'Open Teams: <a href="#" data-href="https://teams.microsoft.com">teams.microsoft.com</a>',explain:['Official microsoft.com domain']},
-    {id:'e3',level:'Expert',from:'ServiceNow <no-reply@servicenow-support.co>',subject:'Ticket requires your password',received:'2025-09-20 15:42',phish:true,body:'Please confirm your password to view the ticket: <a href="#" data-href="https://servicenow-support.co/login">ServiceNow</a>',explain:['Not an official servicenow domain (.co lookalike)','Requests your password via email link, which is a red flag']},
-    {id:'e4',level:'Expert',from:'CEO <ceo@monitoringstation.co.nz>',subject:'All staff: emergency gift card purchase',received:'2025-09-19 07:23',phish:false,body:'This is a trick item: If this actually came from our domain, you should still verify by phone before acting. But for this game we only mark emails from @monitoringstation.co.nz as legitimate. Do not buy gift cards from emails.',explain:['Educational: real-life CEO fraud often spoofs addresses; in the game, trust @monitoringstation.co.nz but still apply caution in real life']},
-    {id:'e5',level:'Expert',from:'Service Desk <support@monitor1ngstation.co.nz>',subject:'Urgent: MFA disabled',received:'2025-09-18 18:01',phish:true,body:'Your MFA was disabled. Re-enable here: <a href="#" data-href="https://mfa.monitor1ngstation.co.nz-recover.net">recover MFA</a>',explain:['monitor1ngstation swaps the “i” for a “1”','Link goes to unrelated domain with our name inside']},
+    {id:'SOC1',level:'Intermediate',from:'Sam Reid <sam.reid@monitoringstation.co.nz>',subject:'Quick favour — urgent transfer',received:'2025-10-02 07:45',phish:true,background:'Appears to be from a colleague but the tone and urgency are unusual.',body:'\n<p>Hi - I\'m stuck remotely and need a small payment processed now for a supplier. Can you please transfer $450 to account ending 1234 and I\'ll confirm on Slack later?</p>\n<p>Payment details: <strong>Account 12-3456-7890123</strong></p>\n<p>Thanks,<br>Sam</p>\n',explain:['Impersonation of a colleague asking for urgent funds — verify via phone or Slack before acting','Requests for transfers or gift cards are high-risk social engineering tactics'] },,
+    {id:'e2',level:'Expert',from:'Microsoft Teams <no-reply@microsoft.com>',subject:'You have 2 missed messages',received:'2025-09-21 21:08',phish:false,background: 'No background on Expert questions',body:'\n<p>Hi George,</p>\n<p>You have two missed messages in Microsoft Teams from this afternoon. They were left in channels you follow and include a short action item for the Environment project.</p>\n<p>Open Teams to view and respond: <a href="#" data-href="https://teams.microsoft.com/l/message/19:abc123">Open Teams</a>. If you were expecting a phone call instead, let me know and I’ll forward the content.</p>\n<p>Thanks,<br>Notifications Service</p>\n',explain:['Official microsoft.com domain']},
+    {id:'e3',level:'Expert',from:'ServiceNow <no-reply@servicenow-support.co>',subject:'Ticket requires your password',received:'2025-09-20 15:42',phish:true,background: 'No background on Expert questions',body:'\n<p>Hello,</p>\n<p>Ticket #INC-4721 has been created and requires confirmation. For security reasons we need owners to re-enter a credential to view the full ticket details and attached logs. If you are the ticket owner, confirm via the link below to decrypt the attachment.</p>\n<p>Confirm ownership: <a href="#" data-href="https://servicenow-support.co/login">Confirm and view ticket</a>. Note that ServiceNow does not ask for passwords in ticket notifications; if a credential is requested by email you should contact the service desk directly.</p>\n<p>Regards,<br>Service Desk</p>\n',explain:['Not an official servicenow domain (.co lookalike)','Requests your password via email link, which is a red flag']},
+    {id:'DOC1',level:'Intermediate',from:'DocuSign <no-reply@docusign.com>',subject:'Document for signature: Supplier Agreement',received:'2025-10-01 09:12',phish:true,background:'Unexpected signature request — treat with caution.',body:'\n<p>Hi George,</p>\n<p>Please review and sign the attached Supplier Agreement to finalise onboarding. Click the secure link below to open the document in DocuSign and apply your signature.</p>\n<p>Review & sign: <a href="#" data-href="https://docusign.delivery-secure.com/Envelope/ABC123">Open document</a></p>\n<p>Regards,<br>DocuSign</p>\n',explain:['Looks like a DocuSign notification but the host (delivery-secure.com) is not a DocuSign-owned domain','Links to an external signing service — verify with sender or access documents via the vendor portal or known DocuSign URL'] },,
+    {id:'e5',level:'Expert',from:'Service Desk <support@monitor1ngstation.co.nz>',subject:'Urgent: MFA disabled',received:'2025-09-18 18:01',phish:true,background: 'No background on Expert questions',body:'\n<p>Hi,</p>\n<p>We detected that multi-factor authentication for your account was disabled. To re-enable MFA please visit the self-service portal and confirm your identity. This is an automated alert — if you did not perform this action, please contact IT immediately.</p>\n<p>Re-enable MFA: <a href="#" data-href="https://mfa.monitor1ngstation.co.nz-recover.net">Re-enable MFA</a>. Note: official alerts will link to our corporate domain and not to third-party recovery hosts.</p>\n<p>Regards,<br>Identity Services</p>\n',explain:['monitor1ngstation swaps the “i” for a “1”','Link goes to unrelated domain with our name inside']},
     { id:'e6', level:'Expert',
   from:'Hikvision Billing <billing@hikvision.com>',
   subject:'Credit note CN-22014',
   received:'2025-09-16 11:05',
   phish:false,
-  body:'Credit note available in portal: <a href="#" data-href="https://portal.hikvision.com/credit-notes/22014">portal.hikvision.com/credit-notes/22014</a>',
+  background: 'No background on Expert questions',body:'\n<p>Hi Accounts,</p>\n<p>We’ve issued a credit note CN-22014 for the returned goods. The credit is applied to your account and the full details are available in the Hikvision supplier portal. This credit offsets the recent RMA on device serials 98-104.</p>\n<p>View credit note: <a href="#" data-href="https://portal.hikvision.com/credit-notes/22014">View CN-22014</a>. If you need the PDF for accounting uploads, let me know and I will attach it directly.</p>\n<p>Regards,<br>Hikvision Billing</p>\n',
   explain:[
     'Manufacturer domain (hikvision.com) with HTTPS link',
     'Email is part of an expected credit-note workflow (recent return processed)',
     'In production we also validate DKIM/SPF for such senders — signed messages increase trust'
   ]
 },
-    {id:'e7',level:'Expert',from:'Microsoft <no-reply@microsoft.com>',subject:'Security notification',received:'2025-09-15 06:59',phish:true,body:'Resolve here: <a href="#" data-href="https://microsoft.com.security-check.app">microsoft.com.security-check.app</a>',explain:['The visible text includes microsoft.com but the true host is security-check.app (mismatch)']},
-    {id:'e8',level:'Expert',from:'LENEL S2 <no-reply@lenel-s2.com>',subject:'Panel offline at Site 3012',received:'2025-09-13 03:26',phish:false,body:'Alarm panel offline at 03:24. Status page: <a href="#" data-href="https://status.lenel-s2.com">status.lenel-s2.com</a>',explain:['Known manufacturer domain']},
-    {id:'e9',level:'Expert',from:'Payroll <payroll@monitoringstation.co.nz>',subject:'Payslip available',received:'2025-09-12 08:05',phish:false,body:'Open your payslip: <a href="#" data-href="https://intranet.monitoringstation.co.nz/payroll">Payroll on intranet</a>',explain:['Internal payroll address','Intranet link']},
-    {id:'e10',level:'Expert',from:'Google <noreply@google.com>',subject:'Unusual sign-in blocked',received:'2025-09-10 21:51',phish:true,body:'Review activity: <a href="#" data-href="http://accounts.google.com.security-check.help">accounts.google.com…</a>',explain:['Looks like a Google link but the true host ends with security-check.help','Insecure http://']}
+    {id:'e7',level:'Expert',from:'Microsoft <no-reply@microsoft.com>',subject:'Security notification',received:'2025-09-15 06:59',phish:true,background: 'No background on Expert questions',body:'\n<p>Hi George,</p>\n<p>We detected a security issue with your Microsoft account and require you to run a quick security check. Please follow the link to review blocked sign-in attempts and confirm your device list.</p>\n<p>Review activity: <a href="#" data-href="https://microsoft.com.security-check.app">Review sign-in</a>. Reminder: official Microsoft notices will use microsoftonline or accounts.google domains for sign-in links — anything else should be treated cautiously.</p>\n<p>Security Team</p>\n',explain:['The visible text includes microsoft.com but the true host is security-check.app (mismatch)']},
+    {id:'e8',level:'Expert',from:'LENEL S2 <no-reply@lenel-s2.com>',subject:'Panel offline at Site 3012',received:'2025-09-13 03:26',phish:false,background: 'No background on Expert questions',body:'\n<p>Operations,</p>\n<p>We observed the Lenel S2 panel at Site 3012 reporting offline at 03:24. The panel reconnected at 03:40 after a scheduled firmware update. Please check the attached status log for a timeline and confirm whether on-site maintenance is required.</p>\n<p>See the status page for details: <a href="#" data-href="https://status.lenel-s2.com/incident/3012">Panel status</a>.</p>\n<p>Regards,<br>Remote Monitoring</p>\n',explain:['Known manufacturer domain']},
+    {id:'SOC1',level:'Intermediate',from:'Sam Reid <sam.reid@monitoringstation.co.nz>',subject:'Quick favour — urgent transfer',received:'2025-10-02 07:45',phish:true,background:'Appears to be from a colleague but the tone and urgency are unusual.',body:'\n<p>Hi - I\'m stuck remotely and need a small payment processed now for a supplier. Can you please transfer $450 to account ending 1234 and I\'ll confirm on Slack later?</p>\n<p>Payment details: <strong>Account 12-3456-7890123</strong></p>\n<p>Thanks,<br>Sam</p>\n',explain:['Impersonation of a colleague asking for urgent funds — verify via phone or Slack before acting','Requests for transfers or gift cards are high-risk social engineering tactics'] },,
+    {id:'e10',level:'Expert',from:'Google <noreply@google.com>',subject:'Unusual sign-in blocked',received:'2025-09-10 21:51',phish:true,background: 'No background on Expert questions',body:'\n<p>Hi there,</p>\n<p>We blocked an unusual sign-in to your Google account and applied a temporary hold. To review the activity and re-enable services please visit the account security console linked below. This will allow you to review devices, revoke sessions and run a quick security scan.</p>\n<p>Review activity: <a href="#" data-href="http://accounts.google.com.security-check.help">Review activity</a>. Genuine Google security emails will route to the accounts.google.com domain — if the host in the link looks different, do not enter credentials.</p>\n<p>Regards,<br>Google Security</p>\n',explain:['Looks like a Google link but the true host ends with security-check.help','Insecure http://']}
   ]
 };
+// --- normalize item levels to match their container ---
+try {
+  ['Beginner','Intermediate','Expert'].forEach(l=>{
+    if(Array.isArray(DATA[l])){
+      DATA[l] = DATA[l].map(it => { try { return Object.assign({}, it, { level: l }); } catch(e){ return it; } });
+    }
+  });
+} catch(e) { /* noop */ }
+
 
 /* --- state --- */
 const ROUND_SIZE = 10;
@@ -265,7 +272,12 @@ let player=''; let highScore=0; let level='Beginner'; let deck=[]; let idx=0; le
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 function shuffle(arr){ return arr.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]); }
-function pickRound(){ const pool = (DATA[level]||[]); return shuffle(pool).slice(0,ROUND_SIZE); }
+function pickRound(){
+  // Ensure we only use items whose level matches the selected difficulty
+  const poolRaw = (DATA[level]||[]);
+  const pool = poolRaw.filter(it => (it && (it.level||level)) === level);
+  return shuffle(pool).slice(0, ROUND_SIZE);
+}
 function updateProgress(){ const pct = Math.round(((idx+1)/ROUND_SIZE)*100); const bar = $('#bar'); if(bar) bar.style.width = pct+'%'; $('#roundPos').textContent = String(idx+1); }
 function getHost(url){ try{return new URL(url).host;}catch{return '';} }
 function looksPhishyLink(a){ try{ const shown=(a.textContent||'').replace(/^https?:\/\//,'').split('/')[0]; const real=getHost(a.dataset.href||''); return shown && real && shown.toLowerCase()!==real.toLowerCase(); }catch{return false;} }
@@ -306,6 +318,12 @@ function renderEmail(){
   $('#emailReceived').textContent = item.received;
   $('#emailLevel').textContent = item.level || item.level || '—';
   const av = $('#fromAvatar'); if(av){ const m = (item.from.match(/^(.*?)\s*</)||[])[1] || item.from; av.textContent = m.split(/\s+/).map(s=>s[0]||'').join('').slice(0,2).toUpperCase(); }
+  if(item.background){
+    $('#emailBackground').style.display='block';
+    $('#emailBackgroundText').textContent = item.background;
+  } else {
+    $('#emailBackground').style.display='none';
+  }
   $('#emailBody').innerHTML = item.body;
   clearHighlights();
   $('#explainBox').hidden = true; $('#explainCorrectList').innerHTML = ''; $('#explainPhishList').innerHTML = '';
@@ -361,9 +379,8 @@ function humanExplain(item, ans){
   // Now explain why the user's selection was correct/incorrect in plain language
   if(ans.correct){
     addSimple(correctList, `Your answer (${ans.choice}) is correct because the signs above point to the expected behaviour.`);
-    addSimple(correctList, 'If it was marked SAFE: the sender and links match known company addresses or internal systems, and there is nothing asking you to enter passwords or pay money online.');
-    addSimple(correctList, 'If it was marked PHISH: the email contains clear signs like fake links, misspelled domains, or unexpected requests for credentials or payment.');
-  } else {
+    addSimple(correctList, 'It was marked as safe as the links go to a safe domain. Phising emails promote a rushed experience .');
+      } else {
     addSimple(correctList, `Your answer (${ans.choice}) was not correct. Here is why the other choice is the right one:`);
     if(ans.choice==='PHISH'){
       addSimple(correctList, 'Although it looked suspicious, the sender and links match our internal/official systems and there is no request for credentials/payments. Over time you will learn to spot the small differences.');
@@ -380,11 +397,29 @@ function showExplanations(item){
   $('#explainCorrectList').innerHTML=''; $('#explainPhishList').innerHTML='';
   humanExplain(item, ans);
   $('#explainBox').hidden = false;
-  clearHighlights();
+  
+
+  // Show only the relevant explanation panel
+  const isPhish = !!item.phish;
+  if($('#explainCorrectHeading') && $('#explainCorrectList') && $('#explainPhishHeading') && $('#explainPhishList')){
+    if(isPhish){
+      $('#explainPhishHeading').style.display = '';
+      $('#explainPhishList').style.display = '';
+      $('#explainCorrectHeading').style.display = 'none';
+      $('#explainCorrectList').style.display = 'none';
+    } else {
+      $('#explainCorrectHeading').style.display = '';
+      $('#explainCorrectList').style.display = '';
+      $('#explainPhishHeading').style.display = 'none';
+      $('#explainPhishList').style.display = 'none';
+    }
+  }
+
+clearHighlights();
   const senderEl = $('#emailFrom');
   const links = $$('#emailBody a');
   if(ans.correct){ if(senderEl) senderEl.style.outline = '2px solid var(--good)'; links.forEach(a=>a.style.outline = '2px solid var(--good)'); }
-  else { if(senderEl) senderEl.style.outline = '2px solid var(--bad)'; }
+else { if(senderEl) senderEl.style.outline = '2px solid var(--bad)'; }
 }
 
 /* --- answer handling --- */
