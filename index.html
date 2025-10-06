@@ -169,22 +169,66 @@ const DATA = {
     {id:'b3',level:'Beginner',from:'Rostering <shifts@monitoringstation.co.nz>',subject:'Shift swap request - Friday night',received:'2025-09-12 09:21',phish:false,body:'Can anyone cover Friday 22:00-06:00? Reply in Teams or confirm here: <a href="#" data-href="https://intranet.monitoringstation.co.nz/rostering">intranet rostering</a>',explain:['Internal rostering address','HTTPS intranet link']},
     {id:'b4',level:'Beginner',from:'Alarm Cloud <no-reply@alarmcloud.support>',subject:'New voicemail from Downer Intercom',received:'2025-09-10 13:17',phish:true,body:'Voice message (28s). Download MP3: <a href="#" data-href="https://alarmcloud.support.voicemail.gq/file.mp3">alarmcloud voicemail</a>',explain:['Weird multi-level domain with .gq TLD often abused','Unexpected MP3 download']},
     {id:'b5',level:'Beginner',from:'Accounts Payable <ap@monitoringstation.co.nz>',subject:'September supplier remittance',received:'2025-09-09 08:02',phish:false,body:'Attached is the September remittance. Vendor list visible at <a href="#" data-href="https://portal.monitoringstation.co.nz/vendors">vendor portal</a>.',explain:['Normal AP message content','Official portal host']},
-    {id:'b6',level:'Beginner',from:'Microsoft MFA <no-reply@m1crosoft.com>',subject:'NZCS Admin Grog, has requested you Reset your authenticator now',received:'2025-09-07 18:45',phish:true,body:'We detected suspicious activity. Re-enrol here: <a href="#" data-href="https://secure-microsoft.com.re-enrol.id/">https://secure-microsoft.com…</a>',explain:['Misspelled m1crosoft in sender','Suspicious multi-subdomain URL not owned by Microsoft']},
-    {id:'b7',level:'Beginner',from:'Courier <notify@nzpost.co.nz>',subject:'Parcel for Monitoring Station',received:'2025-09-04 10:01',phish:false,body:'Delivery ETA today. Track at <a href="#" data-href="https://www.nzpost.co.nz/tools/tracking">NZ Post tracking</a>.',explain:['Known courier domain','HTTPS link to official site']},
+    {id:'b6',level:'Beginner',from:'Microsoft MFA <no-reply@m1crosoft.com>',subject:'Reset your authenticator now',received:'2025-09-07 18:45',phish:true,body:'We detected suspicious activity.NZCS Admin Grog, has requested you Re-enrol here: <a href="#" data-href="https://secure-microsoft.com.re-enrol.id/">https://secure-microsoft.com…</a>',explain:['Misspelled m1crosoft in sender','Suspicious multi-subdomain URL not owned by Microsoft']},
+    { id:'b7', level:'Beginner',
+  from:'Courier NZ <no-reply@couriers.co.nz>',
+  subject:'Delivery ETA for Monitoring Station',
+  received:'2025-09-04 10:01',
+  phish:false,
+  body:'Delivery ETA today. Track at <a href="#" data-href="https://couriers.co.nz/track/ABC123">couriers.co.nz/track/ABC123</a>',
+  explain:[
+    'Official courier domain with HTTPS tracking page',
+    'The message matches a recent consignment number in our system (expected)',
+    'No urgent payment or credential requests — just tracking information'
+  ]
+},
     {id:'b8',level:'Beginner',from:'IT Support <support@monitoring-station.co.nz>',subject:'Password expiry in 1 day',received:'2025-09-03 07:59',phish:true,body:'Reset here: <a href="#" data-href="http://monitoring-station.co.nz.it-service-reset.com">Password Center</a>',explain:['Hyphenated lookalike sending domain not our primary','Reset link goes to unrelated domain']},
-    {id:'b9',level:'Beginner',from:'Vendor - Sensors Ltd <invoices@sensors-ltd.co.nz>',subject:'Invoice INV-88421',received:'2025-09-02 15:31',phish:false,body:'Invoice available in supplier portal <a href="#" data-href="https://suppliers.sensors-ltd.co.nz/login">suppliers.sensors-ltd.co.nz/login</a>',explain:['Expected vendor relationship','Consistent vendor domain']},
+    { id:'b9', level:'Beginner',
+  from:'Axis Communications <invoices@axis.com>',
+  subject:'Invoice INV-2025-472 issued',
+  received:'2025-09-02 15:31',
+  phish:false,
+  body:'Invoice available in supplier portal <a href="#" data-href="https://partners.axis.com/login">partners.axis.com/login</a>',
+  explain:[
+    'Well-known vendor domain (axis.com) and HTTPS portal',
+    'We have an existing purchase order relationship on file (expected invoice)',
+    'No request for credentials in the email body — it directs to a vendor portal login only'
+  ]
+},
     {id:'b10',level:'Beginner',from:'Security Team <soc@monitoringstation.co.nz>',subject:'SEV-2 false alarm pattern addressed',received:'2025-08-29 11:12',phish:false,body:'We tuned the motion filter for two sites. Change log: <a href="#" data-href="https://intranet.monitoringstation.co.nz/changelog">intranet changelog</a>',explain:['Internal SOC sender','Intranet link over HTTPS']}
   ],
   Intermediate:[
     {id:'i1',level:'Intermediate',from:'Security Team <soc@monitoringstation.co.nz>',subject:'Unusual login to portal (info only)',received:'2025-09-20 06:31',phish:false,body:'FYI: We saw a login for your account from Hamilton at 06:28. If this was you, no action. If not you, open a ticket in <a href="#" data-href="https://intranet.monitoringstation.co.nz/it-support">IT Support</a>.',explain:['Uses our official @monitoringstation.co.nz domain','No direct “reset password now” link; directs to internal IT page']},
     {id:'i2',level:'Intermediate',from:'Parking <parking@aucklandairport.co.nz>',subject:'Receipt: Staff parking top-up',received:'2025-09-18 09:17',phish:false,body:'Your receipt is available in your airport account: <a href="#" data-href="https://my.aucklandairport.co.nz/receipts">my.aucklandairport.co.nz/receipts</a>',explain:['Recognisable sender and domain','No request for credentials by email']},
     {id:'i3',level:'Intermediate',from:'Microsoft 365 <no-reply@micros0ft-security.com>',subject:'NZSC has requested you Verify your account ownership',received:'2025-09-15 20:13',phish:true,body:'We need to verify your account. Continue here: <a href="#" data-href="https://protection.micros0ft-security.com/verify">verification portal</a>',explain:['micros0ft uses a zero (0) in the domain','Not an official Microsoft domain']},
-    {id:'i4',level:'Intermediate',from:'Accounts <accounts@monitoringstation.co.nz>',subject:'Xero: August reconciliation complete',received:'2025-09-14 12:03',phish:false,body:'Reconciliation complete. See summary: <a href="#" data-href="https://intranet.monitoringstation.co.nz/finance/xero">Finance portal</a>',explain:['Internal finance address','HTTPS intranet link']},
+    { id:'i4', level:'Intermediate',
+  from:'Xero Notifications <notifications@xero.com>',
+  subject:'August reconciliation complete',
+  received:'2025-09-14 12:03',
+  phish:false,
+  body:'Reconciliation complete. View report in Xero: <a href="#" data-href="https://login.xero.com/Reports/Reconciliation/12345">login.xero.com/Reports/...</a>',
+  explain:[
+    'Official SaaS login domain (login.xero.com) over HTTPS',
+    'Automated notification matching our finance workflow (expected monthly recon)',
+    'No password request in the email — link goes to the legitimate login interface'
+  ]
+},
     {id:'i5',level:'Intermediate',from:'Courier Update <notify@nzpost.co.nz>',subject:'Re-delivery fee required',received:'2025-09-13 09:11',phish:true,body:'We missed your delivery. Pay re-delivery fee now: <a href="#" data-href="http://nzpost.co.nz.redelivery-fee.com">nzpost re-delivery</a>',explain:['Link goes to unrelated domain with nzpost inside','Uses insecure http://']},
     {id:'i6',level:'Intermediate',from:'HR <people@monitoringstation.co.nz>',subject:'Updated leave policy',received:'2025-09-11 08:00',phish:false,body:'We updated the leave policy. Read here: <a href="#" data-href="https://intranet.monitoringstation.co.nz/policies/leave">policy page</a>',explain:['Official domain and intranet link','Normal internal comms tone']},
     {id:'i7',level:'Intermediate',from:'IT Service Desk <support@monitoringstation.co.nz>',subject:'Device enrollment reminder',received:'2025-09-10 10:22',phish:false,body:'Please complete the device enrollment by Friday. Steps: <a href="#" data-href="https://intranet.monitoringstation.co.nz/it/enrol">intranet enrol</a>',explain:['Internal sender','No external website used']},
     {id:'i8',level:'Intermediate',from:'Voicemail <no-reply@vmail-monstation.gq>',subject:'Voice message (47s)',received:'2025-09-09 07:45',phish:true,body:'Listen to the message: <a href="#" data-href="https://vmail-monstation.gq/file.mp3">voicemail</a>',explain:['Uncommon .gq TLD','Unexpected audio download']},
-    {id:'i9',level:'Intermediate',from:'Cameras NZ <orders@camera-supplies.co.nz>',subject:'Order shipped: 4x dome cams',received:'2025-09-07 13:18',phish:false,body:'Tracking information: <a href="#" data-href="https://www.nzpost.co.nz/tools/tracking">NZ Post</a>',explain:['Known vendor and courier domains']},
+    { id:'i9', level:'Intermediate',
+  from:'Supply Chain <orders@downer.co.nz>',
+  subject:'Order shipped: Site 3012 - 4x dome cams',
+  received:'2025-09-07 13:18',
+  phish:false,
+  body:'Order and tracking information: <a href="#" data-href="https://portal.downer.co.nz/suppliers/orders/3012">portal.downer.co.nz/suppliers/orders/3012</a>',
+  explain:[
+    'Known contractor with prior purchase history',
+    'The URL host matches the contractor portal and uses HTTPS',
+    'Message references a PO and shipment that matches our system (expected)'
+  ]
+},
     {id:'i10',level:'Intermediate',from:'IT Admin <it-admin@monitoring-station.co.nz>',subject:'VPN certificate expired - update now',received:'2025-09-05 19:31',phish:true,body:'Download the new cert: <a href="#" data-href="http://vpn.monitoring-station.co.nz.update-now.info/cert.crt">vpn update</a>',explain:['Hyphenated fake company domain in sender','Download link is not our domain and uses http://']}
   ],
   Expert:[
@@ -193,7 +237,18 @@ const DATA = {
     {id:'e3',level:'Expert',from:'ServiceNow <no-reply@servicenow-support.co>',subject:'Ticket requires your password',received:'2025-09-20 15:42',phish:true,body:'Please confirm your password to view the ticket: <a href="#" data-href="https://servicenow-support.co/login">ServiceNow</a>',explain:['Not an official servicenow domain (.co lookalike)','Requests your password via email link, which is a red flag']},
     {id:'e4',level:'Expert',from:'CEO <ceo@monitoringstation.co.nz>',subject:'All staff: emergency gift card purchase',received:'2025-09-19 07:23',phish:false,body:'This is a trick item: If this actually came from our domain, you should still verify by phone before acting. But for this game we only mark emails from @monitoringstation.co.nz as legitimate. Do not buy gift cards from emails.',explain:['Educational: real-life CEO fraud often spoofs addresses; in the game, trust @monitoringstation.co.nz but still apply caution in real life']},
     {id:'e5',level:'Expert',from:'Service Desk <support@monitor1ngstation.co.nz>',subject:'Urgent: MFA disabled',received:'2025-09-18 18:01',phish:true,body:'Your MFA was disabled. Re-enable here: <a href="#" data-href="https://mfa.monitor1ngstation.co.nz-recover.net">recover MFA</a>',explain:['monitor1ngstation swaps the “i” for a “1”','Link goes to unrelated domain with our name inside']},
-    {id:'e6',level:'Expert',from:'Vendor — CCTV Hub <billing@cctvhub.co.nz>',subject:'Credit note CN-22014',received:'2025-09-16 11:05',phish:false,body:'Credit note available in portal: <a href="#" data-href="https://portal.cctvhub.co.nz/login">vendor portal</a>',explain:['Recognised vendor','HTTPS portal']},
+    { id:'e6', level:'Expert',
+  from:'Hikvision Billing <billing@hikvision.com>',
+  subject:'Credit note CN-22014',
+  received:'2025-09-16 11:05',
+  phish:false,
+  body:'Credit note available in portal: <a href="#" data-href="https://portal.hikvision.com/credit-notes/22014">portal.hikvision.com/credit-notes/22014</a>',
+  explain:[
+    'Manufacturer domain (hikvision.com) with HTTPS link',
+    'Email is part of an expected credit-note workflow (recent return processed)',
+    'In production we also validate DKIM/SPF for such senders — signed messages increase trust'
+  ]
+},
     {id:'e7',level:'Expert',from:'Microsoft <no-reply@microsoft.com>',subject:'Security notification',received:'2025-09-15 06:59',phish:true,body:'Resolve here: <a href="#" data-href="https://microsoft.com.security-check.app">microsoft.com.security-check.app</a>',explain:['The visible text includes microsoft.com but the true host is security-check.app (mismatch)']},
     {id:'e8',level:'Expert',from:'LENEL S2 <no-reply@lenel-s2.com>',subject:'Panel offline at Site 3012',received:'2025-09-13 03:26',phish:false,body:'Alarm panel offline at 03:24. Status page: <a href="#" data-href="https://status.lenel-s2.com">status.lenel-s2.com</a>',explain:['Known manufacturer domain']},
     {id:'e9',level:'Expert',from:'Payroll <payroll@monitoringstation.co.nz>',subject:'Payslip available',received:'2025-09-12 08:05',phish:false,body:'Open your payslip: <a href="#" data-href="https://intranet.monitoringstation.co.nz/payroll">Payroll on intranet</a>',explain:['Internal payroll address','Intranet link']},
