@@ -419,31 +419,84 @@ window.SUPABASE_URL = "https://ynrawnlcrialbujsihlc.supabase.co";
 window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlucmF3bmxjcmlhbGJ1anNpaGxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk2OTI5MzgsImV4cCI6MjA3NTI2ODkzOH0.IRYBALz9D13CHkzrFTHbAm3e-rlzpVzZVdVuto3oRwQ";
 const SB = window.supabase ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
 
+/** Build the leaderboard table (#scoreTable) */
 async function buildHighTable() {
-  const tb = document.querySelector('#scoreTable tbody'); if(!tb) return; tb.innerHTML='';
-  if (SB) {<th style="text-align:left">#</th>
-    <th style="text-align:left">Player</th>
-    <th style="text-align:left">Score</th>
+  const tb = document.querySelector('#scoreTable tbody');
+  if (!tb) return;
+  tb.innerHTML = '';
+
+  if (SB) {
     try {
-      const { data, error } = await SB.from('highscores').select('player,score').order('score', { ascending: false }).limit(10);
+      // ✅ now also selects "difficulty"
+      const { data, error } = await SB
+        .from('highscores')
+        .select('player,score,difficulty')
+        .order('score', { ascending: false })
+        .limit(10);
+
       if (error) throw error;
       const rows = data || [];
-      if (rows.length === 0) { tb.innerHTML = '<tr><td>—</td><td>No scores yet</td><td>—</td></tr>'; return; }
-      rows.forEach((r,i)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${i+1}</td><td>${r.player}</td><td>${r.score}</td>`; tb.appendChild(tr); });
+      if (rows.length === 0) {
+        tb.innerHTML = '<tr><td>—</td><td>No scores yet</td><td>—</td><td>—</td></tr>';
+        return;
+      }
+      rows.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td>${r.player}</td>
+          <td>${r.score}</td>
+          <td>${r.difficulty || '—'}</td>
+        `;
+        tb.appendChild(tr);
+      });
       return;
-    } catch (e) { console.warn('Supabase leaderboard failed, using localStorage', e); }
+    } catch (e) {
+      console.warn('Supabase leaderboard failed, using localStorage', e);
+    }
   }
-  const rows=[];
-  for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.startsWith('phishbait_highscore_')) rows.push({player:k.replace('phishbait_highscore_',''),score:parseInt(localStorage.getItem(k)||'0',10)||0}); }
-  rows.sort((a,b)=>b.score-a.score);
-  if(rows.length===0){ const tr=document.createElement('tr'); tr.innerHTML='<td>—</td><td>No scores yet</td><td>—</td>'; tb.appendChild(tr); return; }
-  rows.slice(0,10).forEach((r,i)=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${i+1}</td><td>${r.player}</td><td>${r.score}</td>`; tb.appendChild(tr); });
+
+  // 🔁 Fallback to localStorage if Supabase is unavailable
+  const rows = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('phishbait_highscore_') && !k.endsWith('_difficulty')) {
+      const playerName = k.replace('phishbait_highscore_', '');
+      rows.push({
+        player: playerName,
+        score: parseInt(localStorage.getItem(k) || '0', 10) || 0,
+        difficulty: localStorage.getItem(k + '_difficulty') || '—',
+      });
+    }
+  }
+  rows.sort((a, b) => b.score - a.score);
+  if (rows.length === 0) {
+    tb.innerHTML = '<tr><td>—</td><td>No scores yet</td><td>—</td><td>—</td></tr>';
+    return;
+  }
+  rows.slice(0, 10).forEach((r, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${r.player}</td>
+      <td>${r.score}</td>
+      <td>${r.difficulty}</td>
+    `;
+    tb.appendChild(tr);
+  });
 }
 
+/** Get a single player's best score (used when starting a game) */
 async function fetchPlayerHigh(name){
   if (SB) {
     try {
-      const { data, error } = await SB.from('highscores').select('score').eq('player', name).order('score', { ascending:false }).limit(1).maybeSingle();
+      const { data, error } = await SB
+        .from('highscores')
+        .select('score')
+        .eq('player', name)
+        .order('score', { ascending:false })
+        .limit(1)
+        .maybeSingle();
       if (error) throw error;
       return (data && data.score) || 0;
     } catch (e) { console.warn('Supabase fetch high failed, using localStorage', e); }
@@ -451,23 +504,38 @@ async function fetchPlayerHigh(name){
   return parseInt(localStorage.getItem('phishbait_highscore_'+name)||'0',10) || 0;
 }
 
+/** Save the current score (and difficulty) */
 async function saveHigh(){
   try { if (typeof player === 'undefined' || typeof score === 'undefined') return; } catch(e) { return; }
+
   if (SB) {
     try {
-      const { error } = await SB.from('highscores').insert({ player, score });
+      // ✅ store difficulty as well
+      const { error } = await SB.from('highscores').insert({ player, score, difficulty: (typeof level !== 'undefined' ? level : null) });
       if (error) console.warn('Supabase insert error', error);
       try { if (typeof renderHUD==='function') renderHUD(); } catch(_e){}
       try { buildHighTable(); } catch(_e){}
       return;
-    } catch (e) { console.warn('Supabase save failed, falling back to local', e); }
+    } catch (e) {
+      console.warn('Supabase save failed, falling back to local', e);
+    }
   }
-  const k='phishbait_highscore_'+player; const old = parseInt(localStorage.getItem(k)||'0',10);
-  if(score>old){ localStorage.setItem(k,String(score)); try { if (typeof renderHUD==='function') renderHUD(); } catch(_e){} try { buildHighTable(); } catch(_e){} }
+
+  // 🔁 Fallback local save (also persist difficulty)
+  const k = 'phishbait_highscore_' + player;
+  const old = parseInt(localStorage.getItem(k) || '0', 10);
+  if (score > old) {
+    localStorage.setItem(k, String(score));
+    try { localStorage.setItem(k + '_difficulty', (typeof level !== 'undefined' ? level : '—')); } catch(_e){}
+    try { if (typeof renderHUD==='function') renderHUD(); } catch(_e){}
+    try { buildHighTable(); } catch(_e){}
+  }
 }
 
+// Ensure table is built on load
 document.addEventListener('DOMContentLoaded', ()=>{ try{ buildHighTable(); }catch(e){} });
 </script>
+
 
 </body>
 </html>
