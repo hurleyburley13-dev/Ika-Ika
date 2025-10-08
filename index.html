@@ -535,7 +535,7 @@ async function buildHighTable() {
         .from('highscores')
         .select('player,score,difficulty')
         .order('score', { ascending: false })
-        .limit(10);
+        .limit(50);
 
       if (error) throw error;
       const rows = data || [];
@@ -567,7 +567,7 @@ async function buildHighTable() {
       const playerName = k.replace('phishbait_highscore_', '');
       rows.push({
         player: playerName,
-        score: parseInt(localStorage.getItem(k) || '0', 10) || 0,
+        score: parseInt(localStorage.getItem(k) || '0', 50) || 0,
         difficulty: localStorage.getItem(k + '_difficulty') || '—',
       });
     }
@@ -577,7 +577,7 @@ async function buildHighTable() {
     tb.innerHTML = '<tr><td>—</td><td>No scores yet</td><td>—</td><td>—</td></tr>';
     return;
   }
-  rows.slice(0, 10).forEach((r, i) => {
+  rows.slice(0, 50).forEach((r, i) => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${i + 1}</td>
@@ -604,7 +604,7 @@ async function fetchPlayerHigh(name){
       return (data && data.score) || 0;
     } catch (e) { console.warn('Supabase fetch high failed, using localStorage', e); }
   }
-  return parseInt(localStorage.getItem('phishbait_highscore_'+name)||'0',10) || 0;
+  return parseInt(localStorage.getItem('phishbait_highscore_'+name)||'0',50) || 0;
 }
 
 /** Save the current score (and difficulty) */
@@ -626,7 +626,7 @@ async function saveHigh(){
 
   // 🔁 Fallback local save (also persist difficulty)
   const k = 'phishbait_highscore_' + player;
-  const old = parseInt(localStorage.getItem(k) || '0', 10);
+  const old = parseInt(localStorage.getItem(k) || '0', 50);
   if (score > old) {
     localStorage.setItem(k, String(score));
     try { localStorage.setItem(k + '_difficulty', (typeof level !== 'undefined' ? level : '—')); } catch(_e){}
